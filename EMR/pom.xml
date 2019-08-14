@@ -3,7 +3,7 @@
 
 	<groupId>com.digiwin.emr</groupId>
 	<artifactId>EMR</artifactId>
-	<version>2.0.2.1001</version>
+	<version>2.1.0.1000</version>
 	<packaging>pom</packaging>
 
 	<name>EMR</name>
@@ -11,7 +11,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<api.version>2.0.2.1001</api.version>				
+		<api.version>2.1.0.1000</api.version>				
 		<nexus.ip>47.100.215.42:8081</nexus.ip>
 		<spring.version>5.0.5.RELEASE</spring.version>
 	</properties>

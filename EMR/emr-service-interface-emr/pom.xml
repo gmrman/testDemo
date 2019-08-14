@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>com.digiwin.emr</groupId>
 		<artifactId>EMR</artifactId>
-		<version>2.0.2.1001</version>
+		<version>2.1.0.1000</version>
 	</parent>
 	
 	<artifactId>emr-service-interface-emr</artifactId>
