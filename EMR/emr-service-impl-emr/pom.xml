@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.digiwin.emr</groupId>
+		<artifactId>EMR</artifactId>
+		<version>2.0.2.1001</version>
+	</parent>
+	
+	<artifactId>emr-service-impl-emr</artifactId>
+	<packaging>jar</packaging>
+	
+	<name>emr-service-impl-emr</name>
+	<url>http://maven.apache.org</url>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<module.basedir>${project.parent.basedir}</module.basedir>
+		<module.name>EMR</module.name>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.digiwin.emr</groupId>
+			<artifactId>emr-service-interface-emr</artifactId>			
+		</dependency>
+	</dependencies>
+
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<plugins>			
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>genernate-module-impl</id>
+						<phase>package</phase>
+						<configuration>
+							<tasks>								
+								<copy todir="${module.basedir}/target/${module.name}">									
+									<fileset dir="${basedir}/target">
+										<include name="*.jar"/>
+									</fileset>
+								</copy>														
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>			
+		</plugins>
+	</build>
+</project>
