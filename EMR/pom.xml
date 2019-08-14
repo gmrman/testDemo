@@ -12,7 +12,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<api.version>2.0.2.1001</api.version>				
-		<nexus.ip>10.40.41.220:8081</nexus.ip>
+		<nexus.ip>47.100.215.42:8081</nexus.ip>
 		<spring.version>5.0.5.RELEASE</spring.version>
 	</properties>
 
