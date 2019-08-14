@@ -1,0 +1,7 @@
+/EMR/target/
+/EMR/emr-service-impl-emr/target/
+/EMR/emr-service-interface-emr/target/
+/EMR/emr-service-interface-emr/.settings/*
+/EMR/*.iml
+/EMR/emr-service-impl-emr/*.iml
+/EMR/emr-service-interface-emr/*.iml
