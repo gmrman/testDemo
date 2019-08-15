@@ -4,7 +4,7 @@ import com.digiwin.app.container.exceptions.DWArgumentException;
 import com.digiwin.app.dao.DWDao;
 import com.digiwin.app.dao.DWServiceResultBuilder;
 import com.digiwin.app.service.DWServiceContext;
-import com.digiwin.emr.emr.service.IEquipmentMaintainService;
+import com.digiwin.emr.emr.service.IEquipmentMaintainItemService;
 import com.digiwin.emr.emr.service.util.EquipmentUtil;
 import com.digiwin.emr.emr.service.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-public class EquipmentMaintainService implements IEquipmentMaintainService {
+public class EquipmentMaintainItemService implements IEquipmentMaintainItemService {
 
     @Autowired
     @Qualifier("dw-dao")
@@ -82,7 +82,7 @@ public class EquipmentMaintainService implements IEquipmentMaintainService {
                     ",create_date,create_by,create_program,last_update_date" +
                     ",last_update_by,last_update_program ${tenantName}) " +
                     "values(?,?,?,?,?,?,?,?,?,? ${tenantValue})";
-            dao.update(sql,uuid,comp_no,site_no,eq_no_list.get(i),nowTime,user_id,"EquipmentMaintain/postEqList",nowTime,user_id,"EquipmentMaintain/postEqList");
+            dao.update(sql,uuid,comp_no,site_no,eq_no_list.get(i),nowTime,user_id,"EquipmentMaintainItem/postEqList",nowTime,user_id,"EquipmentMaintain/postEqList");
         }
 
         return DWServiceResultBuilder.build(true, "添加设备成功", null);

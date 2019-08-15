@@ -5,7 +5,7 @@ import com.digiwin.app.service.DWService;
 
 import java.util.Map;
 
-public interface IEquipmentMaintainService extends DWService {
+public interface IEquipmentMaintainItemService extends DWService {
     /**
      * 取得设备清单
      * @author lidonga

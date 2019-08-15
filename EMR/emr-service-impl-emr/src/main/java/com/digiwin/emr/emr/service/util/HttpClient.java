@@ -1,6 +1,8 @@
 package com.digiwin.emr.emr.service.util;
 
 import java.net.URLEncoder;
+
+import com.digiwin.app.module.DWModuleConfigUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -28,11 +30,12 @@ public class HttpClient {
 	public static DWServiceResult get(String url,JSONObject param) throws Exception {
 		CloseableHttpClient httpClient = null;
 		CloseableHttpResponse response = null;
-		String dwth_url = DWModuleResourceUtils.getProperties(HttpClient.class, "ibl.properties").getProperty("dwth.url");
+		String esc_url = DWModuleConfigUtils.getCurrentModuleProperty("esc_url");
+		log.info("esc_url:"+esc_url);
 //		try {
 
 			httpClient = HttpClients.createDefault();
-			URIBuilder uriBuilder = new URIBuilder(dwth_url+"/restful/service/"+url+"?info="+URLEncoder.encode(param.toString(),"UTF-8"));
+			URIBuilder uriBuilder = new URIBuilder(esc_url+"/restful/service/"+url+"?info="+URLEncoder.encode(param.toString(),"UTF-8"));
 			HttpGet get = new HttpGet(uriBuilder.build());
 			
 			get.setHeader(new BasicHeader("accept", "*/*"));
@@ -87,10 +90,10 @@ public class HttpClient {
     }
 	//post方法
 	public static DWServiceResult post(String url, JSONObject param) throws Exception {
-		String dwth_url = DWModuleResourceUtils.getProperties(HttpClient.class, "DWDop.properties").getProperty("dwth.url");
+		String esc_url = DWModuleConfigUtils.getCurrentModuleProperty("esc_url");
 //		try {
 			CloseableHttpClient httpClient = HttpClients.createDefault();
-			HttpPost post = new HttpPost(dwth_url+"/restful/service/"+url);
+			HttpPost post = new HttpPost(esc_url+"/restful/service/"+url);
 			//插入http的请求header
 			post.addHeader("accept", "*/*");
 			post.addHeader("connection", "Keep-Alive");
