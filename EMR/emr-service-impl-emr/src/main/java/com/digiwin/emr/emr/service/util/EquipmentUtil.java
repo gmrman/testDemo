@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class EquipmentUtil {
     //从设备中心获取设备基础资料
-    public static List<Map<String, Object>> callApiForEquipmentByESC(Object tenantsid, String comp_no, String site_no, List<String> group_no, List<String> outEqlist, List<String> inEqList, String status) throws Exception {
+    public static List<Map<String, Object>> callApiForEquipmentByESC(String tenantsid, String comp_no, String site_no, List<String> group_no, List<String> outEqlist, List<String> inEqList, String status) throws Exception {
         JSONObject json = new JSONObject();
         json.put("tenantsid", tenantsid);
         json.put("comp_no", comp_no);
@@ -24,7 +24,7 @@ public class EquipmentUtil {
         json.put("inEqlist", inEqList);
         json.put("status", status);
 
-        DWServiceResult result = (DWServiceResult) HttpClient.get("Equipment/ExtraList",json);
+        DWServiceResult result = (DWServiceResult) HttpClient.get("Esc/Equipment/ExtraList",json);
         if(!result.isSuccess()) {
             throw new Exception(result.geMessage());
         }
