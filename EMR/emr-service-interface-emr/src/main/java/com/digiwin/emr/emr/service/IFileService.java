@@ -17,7 +17,7 @@ public interface IFileService extends DWService {
 	/**
 	 *获取模板文件
 	 */
-//	@AllowAnonymous
+	@AllowAnonymous
 	public Object getModel(Map<String, Object> info) throws Exception;
 
 	/**
@@ -27,7 +27,7 @@ public interface IFileService extends DWService {
 	public Object getFile(String fileId) throws Exception;
 
 
-	//	@AllowAnonymous
+	@AllowAnonymous
 	public Object postMedia(DWFile file) throws Exception;
 	/**
 	 *获取模板文档ID
@@ -35,7 +35,7 @@ public interface IFileService extends DWService {
 //	@AllowAnonymous
 //	public Object getTemplateFileIds(List<Map<String, Object>> info) throws Exception;
 	//删除文件
-//	@AllowAnonymous
+	@AllowAnonymous
 	public Object delete(List<Map<String, Object>> info) throws Exception;
 
 	

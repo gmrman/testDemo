@@ -36,9 +36,11 @@ public class FileService implements IFileService {
 	@Override
 	public Object postMedia(DWFile file) throws Exception {
 		Map<String, Object> map = new HashMap<>();
-		Map<String, Object> profile = DWServiceContext.getContext().getProfile();
-		Long tenantsid = (Long) profile.get("tenantSid");
-		String userid = (String) profile.get("userId");
+//		Map<String, Object> profile = DWServiceContext.getContext().getProfile();
+//		Long tenantsid = (Long) profile.get("tenantSid");
+//		String userid = (String) profile.get("userId");
+		Long tenantsid = new Long(111111);
+		String userid = "gengmr";
 
 		// 获取当前时间
 		Date date = new Date();
@@ -131,7 +133,7 @@ public class FileService implements IFileService {
 			responseHeader.put("Content-Type", "" + (bytesLength - 0));
 			responseHeader.put("Content-Range", "bytes " + 0 + "-" + (bytesLength - 1) + "/" + bytesLength);
 
-		if ("mp3".equals(filename) || "wav".equals(filename) || "ogg".equals(filename)) {
+		if (filename.endsWith("mp3") || filename.endsWith("wav") || filename.endsWith("ogg")) {
 			responseHeader.put("Content-Type", "audio/mpeg");
 		}else{
 			responseHeader.put("Content-Type", "image/png");
