@@ -13,12 +13,21 @@ public interface ITaskService {
     public Object getList(Map<String, Object> info) throws Exception;
 
     /**
-     * 获取任务详情
-     * @author gengmr
+     * 获取计划工单详情
+     * @author jiangzheng
      * @param info 查詢信息
      * @return 結果
      */
 //    @AllowAnonymous
-    public Object getDetail(Map<String, Object> info) throws Exception;
+    public Object getPlanDetail(Map<String, Object> info) throws Exception;
 
+
+    /**
+     * 获取故障工单详情
+     * @author jiangzheng
+     * @param info 查詢信息
+     * @return 結果
+     */
+//    @AllowAnonymous
+    public Object getErrorDetail(Map<String, Object> info) throws Exception;
 }

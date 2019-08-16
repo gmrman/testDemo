@@ -1,14 +1,20 @@
 package com.digiwin.emr.emr.service.impl;
 
 import com.digiwin.app.container.exceptions.DWArgumentException;
+import com.digiwin.app.dao.DWDao;
+import com.digiwin.app.dao.DWServiceResultBuilder;
 import com.digiwin.app.service.DWServiceContext;
 import com.digiwin.emr.emr.service.ITaskService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 public class TaskService implements ITaskService {
+
+    @Autowired
+    @Qualifier("dw-dao")
+    private DWDao dao;
 
     @Override
     public Object getList(Map<String, Object> info) throws Exception {
@@ -71,7 +77,90 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public Object getDetail(Map<String, Object> info) throws Exception {
-        return null;
+    public Object getPlanDetail(Map<String, Object> info) throws Exception {
+
+        String site_no = (String)info.get("site_no");
+        String comp_no = (String)info.get("comp_no");
+        //计划单id
+        String plan_sid = (String)info.get("plan_sid");
+
+        if(site_no == null || site_no.isEmpty())  throw new DWArgumentException("site_no", "site_no is null !");
+        if(comp_no == null || comp_no.isEmpty())  throw new DWArgumentException("comp_no", "comp_no is null !");
+        if(plan_sid == null || plan_sid.isEmpty())  throw new DWArgumentException("plan_sid", "plan_sid is null !");
+        //获取租户
+        Map<String, Object> profile = DWServiceContext.getContext().getProfile();
+        Long tenantsid = (Long) profile.get("tenantSid");
+        //获取对应计划单和工单信息
+        String detailSql = " select rp.eq_no, rp.plan_desc, rp.start_date, rp.finish_date, rp.stop_hour, " +
+                           "        rr.repair_sid, rr.assign_by, IFNULL(rr.estimate_hour,0) AS estimate_hour, rr.start_date " +
+                           "   from r_plan rp  " +
+                           "   left join r_repair rr " +
+                           "     on rp.plan_sid = rr.plan_sid " +
+                           "    and rp.eq_no = rr.eq_no " +
+                           "  where rp.plan_sid = ? " +
+                           "    and rp.tenantsid = ? " +
+                           "    and rp.comp_no = ? " +
+                           "    and rp.site_no = ? " +
+                           "    -${tenantsid}" ;
+
+        List<Map<String,Object>> detailList = this.dao.select(detailSql,plan_sid, tenantsid, comp_no, site_no);
+        Map<String,Object> dataMap = new HashMap<>();
+        if(detailList.size() > 0) {
+            //获取维修部件信息
+            String partSql = " select part, work_desc, std_working_hour " +
+                    "   from r_repair_d " +
+                    "  where repair_sid = ? ";
+
+
+            dataMap = detailList.get(0);
+            List<Map<String, Object>> partList = this.dao.select(partSql, dataMap.get("repair_sid"));
+
+            dataMap.put("repair_part", partList);
+        }
+        return DWServiceResultBuilder.build(true, "", dataMap);
+    }
+
+    @Override
+    public Object getErrorDetail(Map<String, Object> info) throws Exception {
+
+        String site_no = (String)info.get("site_no");
+        String comp_no = (String)info.get("comp_no");
+        //通知单id
+        String nofity_sid = (String)info.get("nofity_sid");
+
+        if(site_no == null || site_no.isEmpty())  throw new DWArgumentException("site_no", "site_no is null !");
+        if(comp_no == null || comp_no.isEmpty())  throw new DWArgumentException("comp_no", "comp_no is null !");
+        if(nofity_sid == null || nofity_sid.isEmpty())  throw new DWArgumentException("nofity_sid", "nofity_sid is null !");
+        //获取租户
+        Map<String, Object> profile = DWServiceContext.getContext().getProfile();
+        Long tenantsid = (Long) profile.get("tenantSid");
+        //获取对应通知单和工单信息
+        String detailSql = " select rn.eq_no, rn.notify_date, rn.contact, " +
+                "        rr.repair_sid, rr.assign_by, IFNULL(rr.estimate_hour,0) AS estimate_hour, " +
+                "        rr.start_date, rr.repair_desc " +
+                "   from r_notify rn  " +
+                "   left join r_repair rr " +
+                "     on rn.nofity_sid = rr.nofity_sid " +
+                "    and rn.eq_no = rr.eq_no " +
+                "  where rn.nofity_sid = ? " +
+                "    and rn.tenantsid = ? " +
+                "    and rn.comp_no = ? " +
+                "    and rn.site_no = ? " +
+                "    -${tenantsid}" ;
+
+        List<Map<String,Object>> detailList = this.dao.select(detailSql,nofity_sid, tenantsid, comp_no, site_no);
+        Map<String,Object> dataMap = new HashMap<>();
+        if(detailList.size() > 0) {
+            //获取维修部件信息
+            String docSql = " select doc_id " +
+                    "   from r_repair_d2 " +
+                    "  where repair_sid = ? ";
+
+            dataMap = detailList.get(0);
+            List<Map<String, Object>> docList = this.dao.select(docSql, dataMap.get("repair_sid"));
+
+            dataMap.put("doc_list", docList);
+        }
+        return DWServiceResultBuilder.build(true, "", dataMap);
     }
 }
