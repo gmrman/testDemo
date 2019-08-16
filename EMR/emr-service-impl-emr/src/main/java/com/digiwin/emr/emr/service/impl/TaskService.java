@@ -75,6 +75,9 @@ public class TaskService implements ITaskService {
         }
         String sql=planSql.toString()+" UNION ALL "+notifySql.toString();
         List<Map<String, Object>> resultlist = this.dao.select(sql,tenantsid, comp_no, site_no, "2019-09-16 17:20:38", tenantsid, comp_no, site_no);
+        //筛选掉id为null的数据
+        resultlist = resultlist.stream()
+                .filter(eqObject -> eqObject.get("id")!=null).collect(Collectors.toList());
         if(resultlist.size()>0){
             List<Map<String, Object>> Data = EquipmentUtil.callApiForEquipmentByESC(tenantsid+"",comp_no,site_no,new ArrayList<String>(),new ArrayList<String>(),new ArrayList<String>(),"Y");
             //处理数据得到设备ID为key的map
