@@ -1,8 +1,10 @@
 package com.digiwin.emr.emr.service;
 
+import com.digiwin.app.service.DWService;
+
 import java.util.Map;
 
-public interface ITaskService {
+public interface ITaskService extends DWService {
     /**
      * 获取任务清单
      * @author gengmr
