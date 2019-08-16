@@ -32,16 +32,16 @@ public class EquipmentMaintainItemService implements IEquipmentMaintainItemServi
 
         //获取租户
         Map<String, Object> profile = DWServiceContext.getContext().getProfile();
-        Object tenantsid = profile.get("tenantSid");
+        Long tenantsid = (Long) profile.get("tenantSid");
         //获取设备单头编号列表
         List<String> EqList = getEqHead(comp_no,site_no);
         List<Map<String, Object>> Data = new ArrayList<Map<String,Object>>();
         if(!"open".equals(open_status)){
             //根据设备单头从设备中心获取设备基础资料
-            Data = EquipmentUtil.callApiForEquipmentByESC(tenantsid,comp_no,site_no,new ArrayList<String>(),new ArrayList<String>(),EqList,"Y");
+            Data = EquipmentUtil.callApiForEquipmentByESC(tenantsid+"",comp_no,site_no,new ArrayList<String>(),new ArrayList<String>(),EqList,"Y");
         }else{
             //根据设备单头从设备中心获取单头设备以外的设备基础资料
-            Data = EquipmentUtil.callApiForEquipmentByESC(tenantsid,comp_no,site_no,new ArrayList<String>(),EqList,new ArrayList<String>(),"Y");
+            Data = EquipmentUtil.callApiForEquipmentByESC(tenantsid+"",comp_no,site_no,new ArrayList<String>(),EqList,new ArrayList<String>(),"Y");
         }
 
         return DWServiceResultBuilder.build(true, "获取设备资料成功！", Data);
@@ -80,7 +80,7 @@ public class EquipmentMaintainItemService implements IEquipmentMaintainItemServi
              */
             sql = "insert into r_eq (eq_sid,comp_no,site_no,eq_no" +
                     ",create_date,create_by,create_program,last_update_date" +
-                    ",last_update_by,last_update_program ${tenantName}) " +
+                    ",last_update_by,last_update_program,tenantsid) " +
                     "values(?,?,?,?,?,?,?,?,?,? ${tenantValue})";
             dao.update(sql,uuid,comp_no,site_no,eq_no_list.get(i),nowTime,user_id,"EquipmentMaintainItem/postEqList",nowTime,user_id,"EquipmentMaintain/postEqList");
         }
