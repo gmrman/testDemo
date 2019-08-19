@@ -1,8 +1,10 @@
 package com.digiwin.emr.emr.service;
 
+import com.digiwin.app.service.DWService;
+
 import java.util.Map;
 
-public interface IMaintainReportService {
+public interface IMaintainReportService extends DWService {
 
     /**
      * 新增维修记录单

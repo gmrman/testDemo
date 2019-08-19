@@ -1,8 +1,10 @@
 package com.digiwin.emr.emr.service;
 
+import com.digiwin.app.service.DWService;
+
 import java.util.Map;
 
-public interface IMaintainClosingService {
+public interface IMaintainClosingService extends DWService {
 
     /**
      * 維修結案信息回报

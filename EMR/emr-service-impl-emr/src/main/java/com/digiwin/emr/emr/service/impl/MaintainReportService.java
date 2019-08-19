@@ -35,8 +35,6 @@ public class MaintainReportService implements IMaintainReportService {
         String plan_sid = (String)info.get("plan_sid");
         //设备编号
         String eq_no = (String)info.get("eq_no");
-        //序号
-        String report_seq = (String)info.get("report_seq");
         //实际工时
         String work_hour = (String)info.get("work_hour");
         //完成时间
@@ -45,23 +43,38 @@ public class MaintainReportService implements IMaintainReportService {
         String work_desc = (String)info.get("work_desc");
         //维修结果
         String close_flag = (String)info.get("close_flag");
+        //故障原因信息(来源故障通知单才会有故障原因选择)
+        Map<String,Object> closeDetail = (Map<String,Object>)info.get("close_detail");
         //文档id列表
         List<String> docList = (List<String>)info.get("doc_list");
 
         if(site_no == null || site_no.isEmpty())  throw new DWArgumentException("site_no", "site_no is null !");
         if(comp_no == null || comp_no.isEmpty())  throw new DWArgumentException("comp_no", "comp_no is null !");
-        if(notify_sid == null || notify_sid.isEmpty())  throw new DWArgumentException("notify_sid", "notify_sid is null !");
-        if(repair_sid == null || repair_sid.isEmpty())  throw new DWArgumentException("repair_sid", "repair_sid is null !");
-        if(plan_sid == null || plan_sid.isEmpty())  throw new DWArgumentException("plan_sid", "plan_sid is null !");
         if(eq_no == null || eq_no.isEmpty())  throw new DWArgumentException("eq_no", "eq_no is null !");
-        if(report_seq == null || report_seq.isEmpty()) { report_seq = "1";} // 默认第一次
         if(work_hour == null || work_hour.isEmpty()) throw new DWArgumentException("work_hour", "work_hour is null !");
+        if((notify_sid == null || notify_sid.isEmpty()) && (plan_sid == null || plan_sid.isEmpty())){
+            throw new DWArgumentException("sid", "plan_sid or notify_sid is null !");
+        }
         if(close_flag == null || close_flag.isEmpty()) { close_flag = "CLOSE";} //默认结案
 
         Map<String, Object> profile = DWServiceContext.getContext().getProfile();
         String user_id = (String) profile.get("userId");
 
         //insert 维修记录单
+
+        //获取当前维修记录次数最大码+1 作为当前维修次数
+        String seqSql = " select IFNULL(report_seq,0)+1 AS report_seq from r_report " +
+                        "  where repair_sid = ? " +
+                        "    and notify_sid = ? " +
+                        "    and plan_sid = ? " +
+                        "    and  eq_no = ? " +
+                        "    -${tenantsid} ";
+
+        int seq = 1;
+        List<Map<String,Object>> seqList = this.dao.select(seqSql, repair_sid, notify_sid, plan_sid, eq_no);
+        if(seqList.size() > 0 ){
+            seq = Integer.parseInt(seqList.get(0).get("report_seq").toString());
+        }
 
         //UUID 创建维修记录单号
         String report_sid = UUID.randomUUID().toString();
@@ -76,7 +89,7 @@ public class MaintainReportService implements IMaintainReportService {
                         "                       ?,?,?,?,?, " +
                         "                       ?,?,?,?,?,? -{tenantValue} ) ";
 
-        this.dao.update(insSql,report_sid,repair_sid, notify_sid, plan_sid, eq_no,report_seq, work_hour, finish_date, work_desc, close_flag,
+        this.dao.update(insSql,report_sid,repair_sid, notify_sid, plan_sid, eq_no,seq, work_hour, finish_date, work_desc, close_flag,
                                         date,user_id,"maintainReport",date,user_id,"maintainReport");
 
 
@@ -103,6 +116,28 @@ public class MaintainReportService implements IMaintainReportService {
                     "  where repair_sid = ? "+
                     "    -${tenantsid} ";
            this.dao.update(updRepair,'Y',date,date,user_id,"maintainReportService");
+
+           //故障通知单时，回写故障原因 ，
+           if(!(notify_sid == null || notify_sid.isEmpty())){
+               //故障原因码
+               String error_reason = (String)closeDetail.get("error_reason");
+               //故障组件
+               String error_part = (String)closeDetail.get("error_part");
+               //故障说明
+               String error_note = (String)closeDetail.get("error_note");
+               if(error_reason == null || error_reason.isEmpty())  throw new DWArgumentException("error_reason", "error_reason is null !");
+
+               //update 通知单
+               String updSql = " update r_notify set reason_code = ? , part = ? , reason_note = ?, " +
+                       "        last_update_date = ? , last_update_by = ? , last_update_program = ? "+
+                       "  where notify_sid = ? " +
+                       "    and comp_no = ? " +
+                       "    and site_no = ? "+
+                       "    ${tenantSid} ";
+
+               this.dao.update(updSql,error_reason,error_part,error_note,new Date(), user_id, "maintainReport",notify_sid,comp_no,site_no);
+           }
+
 
         }else if("OUT".equals(close_flag)){
             String updRepair = " update r_repair set out_flag = ? , " +

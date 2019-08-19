@@ -112,10 +112,14 @@ public class TaskService implements ITaskService {
         //获取对应计划单和工单信息
         String detailSql = " select rp.eq_no, rp.plan_desc, rp.start_date, rp.finish_date, rp.stop_hour, " +
                            "        rr.repair_sid, rr.assign_by, IFNULL(rr.estimate_hour,0) AS estimate_hour, rr.start_date " +
+                           "        IFNULL(rre.report_seq,0) AS report_seq " +
                            "   from r_plan rp  " +
                            "   left join r_repair rr " +
                            "     on rp.plan_sid = rr.plan_sid " +
                            "    and rp.eq_no = rr.eq_no " +
+                           "   left join r_report rre "+
+                           "     on rp.plan_sid = rre.plan_sid " +
+                           "    and rp.eq_no = rre.eq_no " +
                            "  where rp.plan_sid = ? " +
                            "    and rp.tenantsid = ? " +
                            "    and rp.comp_no = ? " +
@@ -156,11 +160,15 @@ public class TaskService implements ITaskService {
         //获取对应通知单和工单信息
         String detailSql = " select rn.eq_no, rn.notify_date, rn.contact, " +
                 "        rr.repair_sid, rr.assign_by, IFNULL(rr.estimate_hour,0) AS estimate_hour, " +
-                "        rr.start_date, rr.repair_desc " +
+                "        rr.start_date, rr.repair_desc , " +
+                "        IFNULL(rre.report_seq,0) AS report_seq " +
                 "   from r_notify rn  " +
                 "   left join r_repair rr " +
                 "     on rn.nofity_sid = rr.nofity_sid " +
                 "    and rn.eq_no = rr.eq_no " +
+                "   left join r_report rre "+
+                "     on rp.nofity_sid = rre.nofity_sid " +
+                "    and rp.eq_no = rre.eq_no " +
                 "  where rn.nofity_sid = ? " +
                 "    and rn.tenantsid = ? " +
                 "    and rn.comp_no = ? " +
