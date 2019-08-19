@@ -59,7 +59,7 @@ public class RepairPlanService implements IRepairPlanService {
             ineq_list.add(eq_no);
         }
         // 调用设备中心服务获取符合条件的设备信息
-        List<Map<String,Object>> EqList = EquipmentUtil.callApiForEquipmentByESC(tenantsid,comp_no,site_no,group_list,outeq_list,ineq_list,"Y");
+        List<Map<String,Object>> EqList = EquipmentUtil.callApiForEquipmentByESC(String.valueOf(tenantsid),comp_no,site_no,group_list,outeq_list,ineq_list,"Y");
 
         // 进行查询
         String sql = " select plan_sid,eq_no,plan_desc,color_code,start_date,finish_date,day_flag,stop_hour,assign_flag " +
@@ -72,7 +72,7 @@ public class RepairPlanService implements IRepairPlanService {
                 for (Map<String, Object> Eq : EqList) {
                     str += Eq.get("eq_id") + "'" + "," + "'";
                 }
-                sql += str.substring(0, str.length() - 3);
+                sql += str.substring(0, str.length() - 2)+") ";
             }
         }
 
@@ -87,7 +87,7 @@ public class RepairPlanService implements IRepairPlanService {
             List<Map<String,Object>> detail = new ArrayList<Map<String,Object>>();
             String plan_sid = String.valueOf(plan.get("plan_sid"));
             String sql_detail = " select plan_d_sid,part,work_desc,std_working_hour from r_plan_d " +
-                                " where plan_sid = ? ";
+                                " where plan_sid = ? -${tenantsid}";
 
             detail = dao.select(sql_detail,plan_sid);
 
@@ -232,9 +232,9 @@ public class RepairPlanService implements IRepairPlanService {
         // 修改单头
         String sql1 = " update r_plan set eq_no = ?,plan_desc = ?,color_code = ?,start_date = ?,finish_date = ?,day_flag = ?,stop_hour = ?," +
                       " assign_flag = ?,last_update_date = ?,last_update_by = ?,last_update_program = ? " +
-                      " where plan_sid = ? -${tenantsid}) ";
+                      " where plan_sid = ? -${tenantsid} ";
 
-        dao.update(sql1,eq_no,plan_desc,color_code,start_date,finish_date,day_flag,stop_hour,assign_flag,date,user_id,"RepairPlan/putList");
+        dao.update(sql1,eq_no,plan_desc,color_code,start_date,finish_date,day_flag,stop_hour,assign_flag,date,user_id,"RepairPlan/putList",plan_sid);
 
         // 删除单身
         String sql2 = " delete from r_plan_d where plan_sid = ? -${tenantsid} ";
@@ -269,8 +269,9 @@ public class RepairPlanService implements IRepairPlanService {
         // 先删除单头，再删除单身
         String sql1 = " delete from r_plan where plan_sid = ? -${tenantsid} ";
         String sql2 = " delete from r_plan_d where plan_sid = ? -${tenantsid} ";
-        dao.update(sql1,plan_sid);
+        // 有FK先删单身，再删单头
         dao.update(sql2,plan_sid);
+        dao.update(sql1,plan_sid);
 
         return DWServiceResultBuilder.build(true,"Success",null);
     }
