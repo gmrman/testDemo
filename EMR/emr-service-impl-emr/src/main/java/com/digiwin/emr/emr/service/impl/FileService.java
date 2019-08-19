@@ -29,7 +29,7 @@ public class FileService implements IFileService {
 
 	// 上传文件
 	@Override
-	public Object postMedia(DWFile file) throws Exception {
+	public Object postMedia(String folder, DWFile file) throws Exception {
 		Map<String, Object> map = new HashMap<>();
 		Map<String, Object> profile = DWServiceContext.getContext().getProfile();
 		Long tenantsid = (Long) profile.get("tenantSid");
@@ -38,12 +38,12 @@ public class FileService implements IFileService {
 //		String userid = "gengmr";
 
 		// 获取当前时间
-		Date date = new Date();
-		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-		SimpleDateFormat sdfd = new SimpleDateFormat("yyyyMMdd");
-		SimpleDateFormat sdfm = new SimpleDateFormat("yyyyMM");
+//		Date date = new Date();
+//		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+//		SimpleDateFormat sdfd = new SimpleDateFormat("yyyyMMdd");
+//		SimpleDateFormat sdfm = new SimpleDateFormat("yyyyMM");
 		Excel excel = new Excel();
-		excel.uploadLocalDocument(UPLOADPATH  +tenantsid + File.separator + userid + File.separator, file);
+		excel.uploadLocalDocument(UPLOADPATH  +tenantsid + File.separator + folder + File.separator, file);
 		String id = excel.getReturnfileId();
 		if (id != null) {
 			map.put("FileId", id);

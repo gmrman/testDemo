@@ -149,4 +149,11 @@ public class MaintainReportService implements IMaintainReportService {
 
         return DWServiceResultBuilder.build(true, "", "");
     }
+
+    @Override
+    public Object getList(Map<String, Object> info) throws Exception {
+
+
+        return null;
+    }
 }

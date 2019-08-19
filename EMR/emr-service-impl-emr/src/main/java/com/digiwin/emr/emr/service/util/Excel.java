@@ -408,20 +408,13 @@ public class Excel {
 //	}
 
     public void uploadLocalDocument(String path, DWFile file) {
-        String uuid = UUID.randomUUID().toString();
-        String filepath = (System.getProperty("user.dir") + File.separator + "WEB-INF" + File.separator
-                + "implementation" + File.separator + "DWEhi" + File.separator + uuid).replaceAll("\\\\", "/");
-
         String folderid = getFolderId(null, path);// 获取文件夹的id，如果没有则方法中会创建此文件夹
         // 设置文件信息
         FileInfo fileInfo = new FileInfo();
         // 选择tmp文件夹
         documentStorageService = DocumentStorageService.instance();
-//		List<DirInfo> dirInfos = documentStorageService.listContents(null).getDirInfos();
         fileInfo.setDirectoryId(folderid);
         String fileName = file.getFileName();
-
-//		fileInfo.setExtension(fileName.endsWith(EXCEL_XLS) ? "xls" : "xlsx");
 
         InputStream in = null;
         try {
@@ -451,7 +444,6 @@ public class Excel {
             while (up.getPercentage() != 1) {
                 Thread.sleep(500);
             }
-//			log.info("returnfileId:" + getReturnfileId());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -463,8 +455,6 @@ public class Excel {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            File f = new File(filepath);
-            deleteFile(f);
         }
     }
 
@@ -540,6 +530,11 @@ public class Excel {
         // 参数分别为：bucketName,要删除文件夹id
         documentStorageService.deleteDirectory(folderId);
     }
+    //移动文件
+    public void moveFile(String fileId,String folderpath) {
+        IDocumentStorageService documentStorageService=DocumentStorageService.instance();
+        documentStorageService.moveDocument(fileId, getFolderId(null, folderpath));
+    }
 
     // 删除验证后的文件
     public boolean deleteFile(File dirFile) {
@@ -572,7 +567,7 @@ public class Excel {
             String filename = fileInfo.getFileName();
 
             if (filename.endsWith("mp3") || filename.endsWith("wav") || filename.endsWith("ogg") ||
-                    filename.endsWith("mp3")) {
+                    filename.endsWith("mp4") || filename.endsWith("webm")) {
                 map.put("type","1");
             }else if(filename.endsWith("png") || filename.endsWith("jpg") || filename.endsWith("gif")){
                 map.put("type","2");
