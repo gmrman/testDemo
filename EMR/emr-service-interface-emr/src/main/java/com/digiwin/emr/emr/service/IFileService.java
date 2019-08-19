@@ -28,7 +28,7 @@ public interface IFileService extends DWService {
 
 
 //	@AllowAnonymous
-	public Object postMedia(DWFile file) throws Exception;
+	public Object postMedia(String folder, DWFile file) throws Exception;
 	/**
 	 *获取模板文档ID
 	 */

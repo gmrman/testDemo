@@ -6,6 +6,7 @@ import com.digiwin.app.dao.DWServiceResultBuilder;
 import com.digiwin.app.service.DWServiceContext;
 import com.digiwin.emr.emr.service.ITaskService;
 import com.digiwin.emr.emr.service.util.EquipmentUtil;
+import com.digiwin.emr.emr.service.util.Excel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
@@ -50,10 +51,10 @@ public class TaskService implements ITaskService {
         Date now = rightNow.getTime();
 
         //根据不同的情况拼接SQL
-        StringBuffer  planSql= new StringBuffer("-${tenantsid} SELECT a.plan_sid AS id, a.eq_no, a.start_date AS `date`, plan_desc AS `desc`, 'Y' AS isplan, assign_flag AS issend, '' AS docs FROM  r_plan a " +
+        StringBuffer  planSql= new StringBuffer("-${tenantsid} SELECT a.plan_sid AS id, a.eq_no, a.start_date AS `date`, plan_desc AS `desc`, 'Y' AS isplan, assign_flag AS issend, '' AS doc FROM  r_plan a " +
                 " LEFT JOIN r_repair b ON a.plan_sid=b.plan_sid" +
                 " WHERE tenantsid=? AND comp_no=? AND site_no=? AND a.start_date<? AND a.close_flag='N'");
-        StringBuffer notifySql= new StringBuffer(" SELECT a.notify_sid AS id, a.eq_no, notify_date AS `date`, notify_desc AS `desc`, 'N' AS isplan, assign_flag AS issend, group_concat(doc_id) AS docs FROM  r_notify a" +
+        StringBuffer notifySql= new StringBuffer(" SELECT a.notify_sid AS id, a.eq_no, notify_date AS `date`, notify_desc AS `desc`, 'N' AS isplan, assign_flag AS issend, group_concat(doc_id) AS doc FROM  r_notify a" +
                 " LEFT JOIN r_repair b ON a.notify_sid=b.notify_sid" +
                 " LEFT JOIN r_notify_d2 c ON a.notify_sid=c.notify_sid" +
                 " WHERE tenantsid=? AND comp_no=? AND site_no=? AND direct_close='N' AND a.close_flag='N' ");
@@ -81,15 +82,17 @@ public class TaskService implements ITaskService {
         resultlist = resultlist.stream()
                 .filter(eqObject -> eqObject.get("id")!=null).collect(Collectors.toList());
         if(resultlist.size()>0){
+            Excel ec = new Excel();
             List<Map<String, Object>> Data = EquipmentUtil.callApiForEquipmentByESC(tenantsid+"",comp_no,site_no,new ArrayList<String>(),new ArrayList<String>(),new ArrayList<String>(),"Y");
             //处理数据得到设备ID为key的map
             Map<Object, Object> eqmap = Data.stream()
 //				.filter(eqObject -> eqObject.get("eq_id").equals(eqid))//筛选出设备ID为入参的Map
                     .collect(Collectors.toMap(eq -> eq.get("eq_id"), eq ->  eq.get("eq_name")));//将Map中的eq_id:eq_name组成新的Map
 
-            resultlist.stream().forEach(eqob -> {
-                eqob.put("eq_name",eqmap.get(eqob.get("eq_no")));
-            });
+            for (Map<String, Object> eqob : resultlist) {
+                eqob.put("eq_name", eqmap.get(eqob.get("eq_no")));
+                eqob.put("docs", ec.getFiletype(eqob.get("doc").toString()));
+            }
         }
 
         return DWServiceResultBuilder.build(true,"获取列表成功！", resultlist);
