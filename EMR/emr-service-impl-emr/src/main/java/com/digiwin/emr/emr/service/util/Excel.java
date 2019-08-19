@@ -28,54 +28,54 @@ import com.digiwin.dmc.sdk.service.upload.IGeneralDocumentUploader;
 import com.digiwin.dmc.sdk.service.upload.UploadProgressEventArgs;
 
 public class Excel {
-	private static final String EXCEL_XLS = "xls";
-	private static final String EXCEL_XLS_UP = "XLS";
-	private static final String EXCEL_XLSX = "xlsx";
-	private static final String EXCEL_XLSX_UP = "XLSX";
-	private static final SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy/MM/dd");
-	private static final SimpleDateFormat formatterTime = new SimpleDateFormat("HH:mm");
-//	private static Logger log = Logger.getLogger(Excel.class);
-	private static IDocumentStorageService documentStorageService;
-	private String returnfileId = "";
+    private static final String EXCEL_XLS = "xls";
+    private static final String EXCEL_XLS_UP = "XLS";
+    private static final String EXCEL_XLSX = "xlsx";
+    private static final String EXCEL_XLSX_UP = "XLSX";
+    private static final SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy/MM/dd");
+    private static final SimpleDateFormat formatterTime = new SimpleDateFormat("HH:mm");
+    //	private static Logger log = Logger.getLogger(Excel.class);
+    private static IDocumentStorageService documentStorageService;
+    private String returnfileId = "";
 
-	public String getReturnfileId() {
-		return returnfileId;
-	}
+    public String getReturnfileId() {
+        return returnfileId;
+    }
 
-	public void setReturnfileId(String returnfileId) {
-		this.returnfileId = returnfileId;
-	}
+    public void setReturnfileId(String returnfileId) {
+        this.returnfileId = returnfileId;
+    }
 
-	public Excel() {
-		// 设置文档中心的基础设置
-		String url = DWApplicationConfigUtils.getProperty("dmcUrl");
-		String adminname = DWModuleConfigUtils.getCurrentModuleProperty("dmcadminName");
-		String adminpwd = DWModuleConfigUtils.getCurrentModuleProperty("dmcadminPwd");
-		String name = DWModuleConfigUtils.getCurrentModuleProperty("dmcname");
-		String pwd = DWModuleConfigUtils.getCurrentModuleProperty("dmcpwd");
-		String BucketName = DWModuleConfigUtils.getCurrentModuleProperty("dmcbucketName");
+    public Excel() {
+        // 设置文档中心的基础设置
+        String url = DWApplicationConfigUtils.getProperty("dmcUrl");
+        String adminname = DWModuleConfigUtils.getCurrentModuleProperty("dmcadminName");
+        String adminpwd = DWModuleConfigUtils.getCurrentModuleProperty("dmcadminPwd");
+        String name = DWModuleConfigUtils.getCurrentModuleProperty("dmcname");
+        String pwd = DWModuleConfigUtils.getCurrentModuleProperty("dmcpwd");
+        String BucketName = DWModuleConfigUtils.getCurrentModuleProperty("dmcbucketName");
 //		String url = DWModuleResourceUtils.getProperties(Excel.class, "DWEhi.properties").getProperty("file.url");
 //		String adminname = DWModuleResourceUtils.getProperties(Excel.class, "DWEhi.properties").getProperty("file.adminname");
 //		String adminpwd = DWModuleResourceUtils.getProperties(Excel.class, "DWEhi.properties").getProperty("file.adminpwd");
 //		String name = DWModuleResourceUtils.getProperties(Excel.class, "DWEhi.properties").getProperty("file.name");
 //		String pwd = DWModuleResourceUtils.getProperties(Excel.class, "DWEhi.properties").getProperty("file.pwd");
 //		String BucketName = DWModuleResourceUtils.getProperties(Excel.class, "DWEhi.properties").getProperty("file.pwd");
-		ServerSetting.setServiceUrl(url);
-		ServerSetting.setIdentityAdminName(adminname);
-		ServerSetting.setIdentityAdminPwd(adminpwd);
-		ServerSetting.setIdentityName(name);
-		ServerSetting.setIdentityPwd(pwd);
+        ServerSetting.setServiceUrl(url);
+        ServerSetting.setIdentityAdminName(adminname);
+        ServerSetting.setIdentityAdminPwd(adminpwd);
+        ServerSetting.setIdentityName(name);
+        ServerSetting.setIdentityPwd(pwd);
 
 //		ServerSetting.setServiceUrl("http://47.100.186.97:31725");
 ////		ServerSetting.setIdentityAdminName("admin");
 ////		ServerSetting.setIdentityAdminPwd("docadmin");
 ////		ServerSetting.setIdentityName("OEE");
 ////		ServerSetting.setIdentityPwd("OEE");
-		ServerSetting.setBucketName(BucketName);
-		ServerSetting.initialize();
-	}
+        ServerSetting.setBucketName(BucketName);
+        ServerSetting.initialize();
+    }
 
-	// 读取excel，返回List<Map>(Map中key为excel中的名称框如：A1，B5)
+    // 读取excel，返回List<Map>(Map中key为excel中的名称框如：A1，B5)
 //	public List<Map<String, Object>> readExcel(String fileid) throws Exception {
 //
 //		try {
@@ -163,7 +163,7 @@ public class Excel {
 //		}
 //	}
 
-	// 1.判断模板和上传的文件之间是否一致，2.并且数据没有类型错误问题
+    // 1.判断模板和上传的文件之间是否一致，2.并且数据没有类型错误问题
 //	public String checkData(List<Map<String, Object>> modelList, List<Map<String, Object>> dataList, String lang,
 //			String comp_no) {
 //		StringBuffer errorStr = new StringBuffer();
@@ -407,95 +407,95 @@ public class Excel {
 //		}
 //	}
 
-	public void uploadLocalDocument(String path, DWFile file) {
-		String uuid = UUID.randomUUID().toString();
-		String filepath = (System.getProperty("user.dir") + File.separator + "WEB-INF" + File.separator
-				+ "implementation" + File.separator + "DWEhi" + File.separator + uuid).replaceAll("\\\\", "/");
+    public void uploadLocalDocument(String path, DWFile file) {
+        String uuid = UUID.randomUUID().toString();
+        String filepath = (System.getProperty("user.dir") + File.separator + "WEB-INF" + File.separator
+                + "implementation" + File.separator + "DWEhi" + File.separator + uuid).replaceAll("\\\\", "/");
 
-		String folderid = getFolderId(null, path);// 获取文件夹的id，如果没有则方法中会创建此文件夹
-		// 设置文件信息
-		FileInfo fileInfo = new FileInfo();
-		// 选择tmp文件夹
-		documentStorageService = DocumentStorageService.instance();
+        String folderid = getFolderId(null, path);// 获取文件夹的id，如果没有则方法中会创建此文件夹
+        // 设置文件信息
+        FileInfo fileInfo = new FileInfo();
+        // 选择tmp文件夹
+        documentStorageService = DocumentStorageService.instance();
 //		List<DirInfo> dirInfos = documentStorageService.listContents(null).getDirInfos();
-		fileInfo.setDirectoryId(folderid);
-		String fileName = file.getFileName();
+        fileInfo.setDirectoryId(folderid);
+        String fileName = file.getFileName();
 
 //		fileInfo.setExtension(fileName.endsWith(EXCEL_XLS) ? "xls" : "xlsx");
 
-		InputStream in = null;
-		try {
-			in = file.getInputStream();
+        InputStream in = null;
+        try {
+            in = file.getInputStream();
 
-			// 设置文件名
-			fileInfo.setFileName(fileName);
-			// 设置文件描述
-			fileInfo.setDescription(fileName);
-			fileInfo.setDisplayName(fileName);
+            // 设置文件名
+            fileInfo.setFileName(fileName);
+            // 设置文件描述
+            fileInfo.setDescription(fileName);
+            fileInfo.setDisplayName(fileName);
 
-			byte[] buffer = new byte[in.available()];
-			in.read(buffer);
-			// 2.文件上传
-			final UploadProgressEventArgs up = new UploadProgressEventArgs();
-			IGeneralDocumentUploader generalDocumentUploader = documentStorageService.uploadDocument(buffer, fileInfo);
-			// 执行上传线程，直到上传完成结束进程
-			generalDocumentUploader.upload().onCompleted(eventArgs -> {
-				// 判断文件上传是否完成
-				if (eventArgs.getPercentage() == 1) {
-					up.setPercentage(1);
-					// 3.上传成功，返回上传后的文件Id
-					setReturnfileId(eventArgs.getFileId());
+            byte[] buffer = new byte[in.available()];
+            in.read(buffer);
+            // 2.文件上传
+            final UploadProgressEventArgs up = new UploadProgressEventArgs();
+            IGeneralDocumentUploader generalDocumentUploader = documentStorageService.uploadDocument(buffer, fileInfo);
+            // 执行上传线程，直到上传完成结束进程
+            generalDocumentUploader.upload().onCompleted(eventArgs -> {
+                // 判断文件上传是否完成
+                if (eventArgs.getPercentage() == 1) {
+                    up.setPercentage(1);
+                    // 3.上传成功，返回上传后的文件Id
+                    setReturnfileId(eventArgs.getFileId());
 //					log.info("文件上传完成，" + "Id为：" + getReturnfileId());
-				}
-			});
-			while (up.getPercentage() != 1) {
-				Thread.sleep(500);
-			}
+                }
+            });
+            while (up.getPercentage() != 1) {
+                Thread.sleep(500);
+            }
 //			log.info("returnfileId:" + getReturnfileId());
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (in != null) {
-					in.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			File f = new File(filepath);
-			deleteFile(f);
-		}
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            File f = new File(filepath);
+            deleteFile(f);
+        }
+    }
 
-	// 获取文件夹id 根据目录取得文档中心相应的id,没有相应的目录则创建
-	public String getFolderId(String id, String path) {
-		if (path.equals("")) {
-			return id;
-		}
-		documentStorageService = DocumentStorageService.instance();
-		// id目录下存在的文件夹List
-		List<DirInfo> dirInfos = documentStorageService.listContents(id).getDirInfos();
-		String firstfolder = path.substring(0, path.indexOf(File.separator));
-		Boolean flag = false;
+    // 获取文件夹id 根据目录取得文档中心相应的id,没有相应的目录则创建
+    public String getFolderId(String id, String path) {
+        if (path.equals("")) {
+            return id;
+        }
+        documentStorageService = DocumentStorageService.instance();
+        // id目录下存在的文件夹List
+        List<DirInfo> dirInfos = documentStorageService.listContents(id).getDirInfos();
+        String firstfolder = path.substring(0, path.indexOf(File.separator));
+        Boolean flag = false;
 
-		for (int i = 0; i < dirInfos.size(); i++) {
-			if (dirInfos.get(i).getName().equals(firstfolder)) {
-				flag = true;
+        for (int i = 0; i < dirInfos.size(); i++) {
+            if (dirInfos.get(i).getName().equals(firstfolder)) {
+                flag = true;
 
-				return getFolderId(dirInfos.get(i).getId(),
-						path.substring(path.indexOf(File.separator) + 1, path.length()));
-			}
-		}
-		// 不存在则新增文件夹
-		if (!flag) {
-			String newid = documentStorageService.createDirectory(ServerSetting.getBucketName(), firstfolder, id);
-			return getFolderId(newid, path.substring(path.indexOf(File.separator) + 1, path.length()));
-		}
-		return null;
-	}
+                return getFolderId(dirInfos.get(i).getId(),
+                        path.substring(path.indexOf(File.separator) + 1, path.length()));
+            }
+        }
+        // 不存在则新增文件夹
+        if (!flag) {
+            String newid = documentStorageService.createDirectory(ServerSetting.getBucketName(), firstfolder, id);
+            return getFolderId(newid, path.substring(path.indexOf(File.separator) + 1, path.length()));
+        }
+        return null;
+    }
 
-	// 获取当前excel文件的后缀，并根据后缀返回excel包中相应的实体类
+    // 获取当前excel文件的后缀，并根据后缀返回excel包中相应的实体类
 //	private static Workbook getWorkbok(byte[] buffer, FileInfo fileinfo) throws IOException {
 //		Workbook wb = null;
 //		ByteArrayInputStream in = new ByteArrayInputStream(buffer);
@@ -508,68 +508,94 @@ public class Excel {
 //		return wb;
 //	}
 
-	// 获取模板id 根据文档名(模板名)获取文档ID
-	public String getTemplateFileId(String folderid, String filename) {
-		String fileid = "";
-		documentStorageService = DocumentStorageService.instance();
+    // 获取模板id 根据文档名(模板名)获取文档ID
+    public String getTemplateFileId(String folderid, String filename) {
+        String fileid = "";
+        documentStorageService = DocumentStorageService.instance();
 
-		List<FileInfo> fileInfos = documentStorageService.listContents(folderid).getFileInfos();
-		for (int m = 0; m < fileInfos.size(); m++) {
-			if (filename.equals(fileInfos.get(m).getFileName())) {
-				fileid = fileInfos.get(m).getId();
-			}
-		}
-		if (fileid.equals("")) {
-			return null;
-		} else {
-			return fileid;
-		}
-	}
+        List<FileInfo> fileInfos = documentStorageService.listContents(folderid).getFileInfos();
+        for (int m = 0; m < fileInfos.size(); m++) {
+            if (filename.equals(fileInfos.get(m).getFileName())) {
+                fileid = fileInfos.get(m).getId();
+            }
+        }
+        if (fileid.equals("")) {
+            return null;
+        } else {
+            return fileid;
+        }
+    }
 
-	// 根据文件id删除文件
-	public void deleteDocment(String fileId) {
-		documentStorageService = DocumentStorageService.instance();
-		// 参数：被删除文件id
+    // 根据文件id删除文件
+    public void deleteDocment(String fileId) {
+        documentStorageService = DocumentStorageService.instance();
+        // 参数：被删除文件id
 //		FileInfo fileInfo = documentStorageService.getDocumentInfo(fileId);
-		documentStorageService.deleteDocument(fileId);
-	}
+        documentStorageService.deleteDocument(fileId);
+    }
 
-	// 根据文件夹id删除文件夹
-	public void deleteFolder(String folderId) {
-		documentStorageService = DocumentStorageService.instance();
-		// 参数分别为：bucketName,要删除文件夹id
-		documentStorageService.deleteDirectory(folderId);
-	}
+    // 根据文件夹id删除文件夹
+    public void deleteFolder(String folderId) {
+        documentStorageService = DocumentStorageService.instance();
+        // 参数分别为：bucketName,要删除文件夹id
+        documentStorageService.deleteDirectory(folderId);
+    }
 
-	// 删除验证后的文件
-	public boolean deleteFile(File dirFile) {
-		// 如果dir对应的文件不存在，则退出
-		if (!dirFile.exists()) {
-			return false;
-		}
+    // 删除验证后的文件
+    public boolean deleteFile(File dirFile) {
+        // 如果dir对应的文件不存在，则退出
+        if (!dirFile.exists()) {
+            return false;
+        }
 
-		if (dirFile.isFile()) {
-			return dirFile.delete();
-		} else {
+        if (dirFile.isFile()) {
+            return dirFile.delete();
+        } else {
 
-			for (File file : dirFile.listFiles()) {
-				deleteFile(file);
-			}
-		}
+            for (File file : dirFile.listFiles()) {
+                deleteFile(file);
+            }
+        }
 
-		return dirFile.delete();
-	}
+        return dirFile.delete();
+    }
+    //获取文档中心的文档的文件类型
+    public List<Map<String, Object>> getFiletype(String filesStr) throws Exception{
+        String[] files=filesStr.split(",");
+        List<Map<String, Object>> fileList=new ArrayList<Map<String, Object>>();
 
-	public static void main(String[] args) {
-		Excel excel = new Excel();
-		excel.deleteDocment("335200f3-b261-4a04-bb99-87738ac33db2");
+        IDocumentStorageService documentStorageService = DocumentStorageService.instance();
+        for (int i = files.length - 1; i >= 0; i--) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("fileId",files[i]);
+            FileInfo fileInfo = documentStorageService.getDocumentInfo(files[i]);
+            String filename = fileInfo.getFileName();
+
+            if (filename.endsWith("mp3") || filename.endsWith("wav") || filename.endsWith("ogg") ||
+                    filename.endsWith("mp3")) {
+                map.put("type","1");
+            }else if(filename.endsWith("png") || filename.endsWith("jpg") || filename.endsWith("gif")){
+                map.put("type","2");
+            }
+            fileList.add(map);
+        }
+        return fileList;
+    }
+
+    public static void main(String[] args) {
+//        Excel excel = new Excel();
+//        excel.deleteDocment("335200f3-b261-4a04-bb99-87738ac33db2");
 //		List list = excel.readExcel("加工行事历_模板.xlsx");
 //		List list1 = excel.readExcel("加工行事历_模板01.xlsx");
 //		List list = excel.readExcel("停机原因回报_模板.xlsx");
 //		List list1 = excel.readExcel("停机原因回报_模板01.xlsx");
 //		System.err.println(excel.checkData(list, list1));
 //		System.err.println(excel.getTemplateFileId("设备基础数据_模板_zh_CN.xlsx"));
+        String[] files="1,2,3,4,5".split(",");
+        for (int i = files.length - 1; i >= 0; i--) {
+            System.out.println(files[i]);
+        }
 
-	}
+    }
 
 }
