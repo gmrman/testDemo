@@ -5,13 +5,12 @@ import com.digiwin.app.dao.DWDao;
 import com.digiwin.app.dao.DWServiceResultBuilder;
 import com.digiwin.app.service.DWServiceContext;
 import com.digiwin.emr.emr.service.IRepairPlanService;
+import com.digiwin.emr.emr.service.util.EquipmentUtil;
 import com.digiwin.emr.emr.service.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.Statement;
 import java.util.*;
 
 public class RepairPlanService implements IRepairPlanService {
@@ -50,8 +49,17 @@ public class RepairPlanService implements IRepairPlanService {
 
         StringUtil.SQL(eq_no);
 
-
+        List<String> group_list = new ArrayList<String>();
+        List<String> ineq_list = new ArrayList<String>();
+        List<String> outeq_list = new ArrayList<String>();
+        if(!"".equals(group_no)){
+            group_list.add(group_no);
+        }
+        if(!"".equals(eq_no)){
+            ineq_list.add(eq_no);
+        }
         // 调用设备中心服务获取符合条件的设备信息
+        List<Map<String,Object>> EqList = EquipmentUtil.callApiForEquipmentByESC(tenantsid,comp_no,site_no,group_list,outeq_list,ineq_list,"Y");
 
         // 进行查询
         String sql = " select plan_sid,eq_no,plan_desc,color_code,start_date,finish_date,day_flag,stop_hour,assign_flag " +
@@ -59,7 +67,13 @@ public class RepairPlanService implements IRepairPlanService {
                      " and ((start_date >= ? AND start_date <= ?) OR (start_date <= ? AND finish_date >= ?) OR (finish_date >= ? AND finish_date <= ?)) ";
 
         if(!"".equals(group_no)){
-            sql += "  ";
+            if(EqList.size()>0) {
+                String str = " and eq_no in ('";
+                for (Map<String, Object> Eq : EqList) {
+                    str += Eq.get("eq_id") + "'" + "," + "'";
+                }
+                sql += str.substring(0, str.length() - 3);
+            }
         }
 
         if(!"".equals(eq_no)){
@@ -78,7 +92,13 @@ public class RepairPlanService implements IRepairPlanService {
             detail = dao.select(sql_detail,plan_sid);
 
             // 获取设备名称
-            plan.put("eq_name","");
+            String eq_name = "";
+            for (Map<String, Object> Eq : EqList) {
+                if(plan.get("eq_no").equals(Eq.get("eq_id"))){
+                    eq_name = String.valueOf(Eq.get("eq_name"));
+                }
+            }
+            plan.put("eq_name",eq_name);
             plan.put("detail",detail);
             data.add(plan);
         }
@@ -164,8 +184,8 @@ public class RepairPlanService implements IRepairPlanService {
     public Object putList(Map<String, Object> info) throws Exception {
         Map<String, Object> profile = DWServiceContext.getContext().getProfile();
         Object tenantsid = profile.get("tenantSid");
-        String plan_sid = (String) profile.get("plan_sid");
         String user_id = (String) profile.get("userId");
+        String plan_sid = (String) info.get("plan_sid");
         String comp_no = (String) info.get("comp_no");
         String site_no = (String) info.get("site_no");
         String eq_no = (String) info.get("eq_no");
