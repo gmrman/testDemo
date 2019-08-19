@@ -1,27 +1,22 @@
 package com.digiwin.emr.emr.service.impl;
 
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 import com.digiwin.app.container.exceptions.DWArgumentException;
-import com.digiwin.emr.emr.service.IFileService;
-import com.digiwin.emr.emr.service.util.Excel;
-import org.apache.commons.io.IOUtils;
-import sun.misc.BASE64Encoder;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.digiwin.app.dao.DWDao;
 import com.digiwin.app.service.DWFile;
 import com.digiwin.app.service.DWServiceContext;
 import com.digiwin.dmc.sdk.entity.FileInfo;
 import com.digiwin.dmc.sdk.service.IDocumentStorageService;
 import com.digiwin.dmc.sdk.service.impl.DocumentStorageService;
+import com.digiwin.emr.emr.service.IFileService;
+import com.digiwin.emr.emr.service.util.Excel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import sun.misc.BASE64Encoder;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class FileService implements IFileService {
 
