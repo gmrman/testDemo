@@ -8,6 +8,8 @@ import com.digiwin.emr.emr.service.ITaskService;
 import com.digiwin.emr.emr.service.util.EquipmentUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -96,5 +98,25 @@ public class TaskService implements ITaskService {
     @Override
     public Object getDetail(Map<String, Object> info) throws Exception {
         return null;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED,rollbackForClassName = "Exception")
+    public Object postTaskClose(Map<String, Object> info) throws Exception {
+        //处理接收参数
+        String comp_no = (String) info.get("comp_no");
+        String site_no = (String) info.get("site_no");
+        String id = (String) info.get("id");//故障ID
+        String closeDesc = (String) info.get("closeDesc");
+        if (comp_no == null || comp_no.trim().isEmpty())
+            throw new DWArgumentException("comp_no", "comp_no is null !");
+        if (site_no == null || site_no.trim().isEmpty())
+            throw new DWArgumentException("site_no", "site_no is null !");
+        if (id == null || id.trim().isEmpty())
+            throw new DWArgumentException("id", "id is null !");
+
+        String sql="UPDATE r_notify SET direct_close='Y',direct_close_comment=? WHERE  notify_sid=? AND comp_no=? AND site_no=? ${tenantsid}";
+        this.dao.update(sql,closeDesc,id,comp_no,site_no);
+        return DWServiceResultBuilder.build(true,"故障通知关闭成功！",null);
     }
 }

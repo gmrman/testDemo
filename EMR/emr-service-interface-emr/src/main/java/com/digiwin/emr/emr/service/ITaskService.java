@@ -23,4 +23,13 @@ public interface ITaskService extends DWService {
 //    @AllowAnonymous
     public Object getDetail(Map<String, Object> info) throws Exception;
 
+    /**
+     * 故障任务通知单关闭
+     * @author gengmr
+     * @param info 查詢信息
+     * @return 結果
+     */
+//    @AllowAnonymous
+    public Object postTaskClose(Map<String, Object> info) throws Exception;
+
 }
