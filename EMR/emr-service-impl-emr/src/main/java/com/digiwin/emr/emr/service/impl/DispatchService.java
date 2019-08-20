@@ -70,7 +70,7 @@ public class DispatchService implements IDispatchService {
         StringUtil.SQL(folder);
 
         //判断通知单ID还是计划ID
-        String notify_sid = "", plan_sid = "";
+        String notify_sid = null, plan_sid = null;
         switch (type) {
             case "1"://通知单
                 notify_sid = id;
@@ -86,23 +86,26 @@ public class DispatchService implements IDispatchService {
         Map<String, Object> profile = DWServiceContext.getContext().getProfile();
         Long tenantsid = (Long)profile.get("tenantSid");
         String user_id = (String) profile.get("userId");
+        String servicename="DispatchService/post";
 
         //新增派工单
         String sql = "-${tenantsid} INSERT INTO r_repair(repair_sid,notify_sid,plan_sid,eq_no,assign_by," +
                 "                                      assign_to,estimate_hour,start_date,repair_desc,create_date," +
                 "                                      create_by,create_program,last_update_date,last_update_by,last_update_program)" +
-                "   VALUES(?,?,?,?,?, ?,?,?,?,?, ?,'Dispatch/post',?,?,'Dispatch/post')";
+                "   VALUES(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)";
 
         this.dao.update(sql, uuid, notify_sid, plan_sid, eq_no, assign_by,
                 assign_to, estimate_hour, start_date, repair_desc, now,
-                user_id, now, user_id);
+                user_id, servicename, now, user_id, servicename);
 
         if ("2".equals(type) && dispatchDetail.size() > 0) {//如果是维修计划，插入维修部件
             String detailuuid = "";
             detailuuid = UUID.randomUUID().toString().replace("-", "");
-            StringBuffer dispatchDetailStr = new StringBuffer("-${tenantsid} INSERT INTO r_repair_d(repair_d_sid, repair_sid, part, work_desc, std_working_hour) VALUES");
+            StringBuffer dispatchDetailStr = new StringBuffer("-${tenantsid} INSERT INTO r_repair_d(repair_d_sid, repair_sid, part, work_desc, std_working_hour，" +
+                    " create_date, create_by,create_program,last_update_date,last_update_by,last_update_program) VALUES");
             for (Map<String, Object> detail : dispatchDetail) {
-                dispatchDetailStr.append("('" + detailuuid + "','" + id + "','" + detail.get("part") + "','" + detail.get("work_desc") + "','" + detail.get("std_working_hour") + "'),");
+                dispatchDetailStr.append("('" + detailuuid + "','" + id + "','" + detail.get("part") + "','" + detail.get("work_desc") + "','" + detail.get("std_working_hour") + "'," +
+                        "'"+now+"','"+user_id+"','"+servicename+"','"+now+"','"+user_id+"','"+servicename+"'),");
             }
             sql = dispatchDetailStr.toString();
             sql = sql.substring(0, sql.length() - 1);
