@@ -1,6 +1,5 @@
 package com.digiwin.emr.emr.service;
 
-import com.digiwin.app.container.exceptions.DWException;
 import com.digiwin.app.service.DWService;
 
 import java.util.Map;
@@ -14,6 +13,24 @@ public interface IReportService extends DWService {
      * @param info get
      * @return 結果
      */
-     public Object getAbnormalReason(Map<String,Object> info) throws DWException;
+     public Object getAbnormalReason(Map<String,Object> info) throws Exception;
 
+
+
+    /**
+     * 报表：计划于实际停机时间比较
+     * @author jiangzheng
+     * @param info get
+     * @return 結果
+     */
+    public Object getStopHourComparation(Map<String,Object> info) throws Exception;
+
+
+    /**
+     * 报表：异常维修统计
+     * @author jiangzheng
+     * @param info get
+     * @return 結果
+     */
+    public Object getAbnormalMaintain(Map<String,Object> info) throws Exception;
 }
