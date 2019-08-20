@@ -34,10 +34,11 @@ public class CallRepairService implements ICallRepairService {
         if (site_no == null || site_no.isEmpty())
             throw new DWArgumentException("site_no", "site_no is null !");
 
-        String sql = " select a.out_sid,a.notify_sid,a.repair_sid,a.eq_no,a.out_date,a.out_note,a.partner_no,a.contact,a.out_cost,a.close_date,a.close_note,a.doc_id,a.info_prod,a.info_ehi,a.info_emr,a.info_daq " +
-                " b.notify_date,b.close_flag " +
+        String sql = " select a.out_sid,a.notify_sid,a.repair_sid,a.eq_no,a.out_date,a.out_note,a.partner_no,a.contact,a.out_cost,a.close_date,a.close_note,a.doc_id,a.info_prod,a.info_ehi,a.info_emr,a.info_daq, " +
+                " b.notify_date,b.close_flag,b.reason_code,b.part,b.reason_note,c.partner_name,c.telephone " +
                 " from r_repair_out a " +
                 " left join r_notify b on a.notify_sid = b.notify_sid " +
+                " left join p_partner c on b.tenantsid = c.tenantsid and b.comp_no = c.comp_no and b.site_no = c.site_no and a.partner_no = c.partner_no " +
                 " where b.tenantsid = ? and b.comp_no = ? and b.site_no = ? -${tenantsid}  ";
 
         data = dao.select(sql,tenantsid,comp_no,site_no);
@@ -59,7 +60,7 @@ public class CallRepairService implements ICallRepairService {
             List<Map<String,Object>> notifyDoc = dao.select(dsql1,notify_sid);
             // 获取叫修记录文档ID
             String dsql2 = " select repair_out_d_sid,doc_id from r_repair_out_d where out_sid = ? -${tenantsid}";
-            List<Map<String,Object>> repairOutDoc = dao.select(dsql2,out_sid);
+            List<Map<String,Object>> repairCallDoc = dao.select(dsql2,out_sid);
             // 获取设备名称
             for (Map<String, Object> Eq : EqList) {
                 if(dataMap.get("eq_no").equals(Eq.get("eq_id"))){
@@ -68,7 +69,7 @@ public class CallRepairService implements ICallRepairService {
             }
             dataMap.put("eq_name",eq_name);
             dataMap.put("notifyDoc",notifyDoc);
-            dataMap.put("repairOutDoc",repairOutDoc);
+            dataMap.put("repairCallDoc",repairCallDoc);
         }
 
         return DWServiceResultBuilder.build(true,"Success",data);
@@ -81,7 +82,63 @@ public class CallRepairService implements ICallRepairService {
         Object tenantsid = profile.get("tenantSid");
         String user_id = (String) profile.get("userId");
 
-        return null;
+        String out_sid = (String) info.get("out_sid");
+        String notify_sid = (String) info.get("notify_sid");
+        String repair_sid = (String) info.get("repair_sid");
+        String out_cost = (String) info.get("out_cost");
+        String close_note = (String) info.get("close_note");
+        String reason_code = (String) info.get("reason_code");
+        String part = (String) info.get("part");
+        String reason_note = (String) info.get("reason_note");
+        List<String> docList = (List<String>) info.get("docList");
+
+        if (out_sid == null)
+            throw new DWArgumentException("out_sid", "out_sid is null !");
+        if (notify_sid == null)
+            throw new DWArgumentException("notify_sid", "notify_sid is null !");
+        if (out_cost == null)
+            throw new DWArgumentException("out_cost", "out_cost is null !");
+        if (close_note == null)
+            throw new DWArgumentException("close_note", "close_note is null !");
+        if (reason_code == null)
+            throw new DWArgumentException("reason_code", "reason_code is null !");
+        if (part == null)
+            throw new DWArgumentException("part", "part is null !");
+        if (reason_note == null)
+            throw new DWArgumentException("reason_note", "reason_note is null !");
+        if (docList == null)
+            throw new DWArgumentException("docList", "docList is null !");
+
+        Date date = new Date();
+
+        // 首先更新叫修档
+        String sql1 = " update r_repair_out set out_cost = ?,close_date = ?,close_note = ?,last_update_date = ?,last_update_by = ?,last_update_program = ? " +
+                " where out_sid = ? -${tenantsid}";
+
+        dao.update(sql1,out_cost,date,close_note,date,user_id,"CallRepair/putList",out_sid);
+
+        // 再新增附件档
+        for(String doc_id:docList){
+            String repair_out_d_sid = UUID.randomUUID().toString().replace("-", "");
+            String sql2 = " insert into r_repair_out_d(repair_out_d_sid,out_sid,doc_id,create_date,create_by,create_program,last_update_date,last_update_by,last_update_program -${tenantName}) " +
+                    " values (?,?,?,?,?,?,?,?,? -${tenantValue}) ";
+            dao.update(sql2,repair_out_d_sid,out_sid,doc_id,date,user_id,"CallRepair/putList",date,user_id,"CallRepair/putList");
+        }
+
+        // 其次更新通知档
+        String sql3 = " update r_notify set close_flag = 'Y',close_date = ?,reason_code = ?,part = ?,reason_note = ?,last_update_date = ?,last_update_by = ?,last_update_program = ? " +
+                " where notify_sid = ? -${tenantsid}";
+
+        dao.update(sql3,date,reason_code,part,reason_note,date,user_id,"CallRepair/putList",notify_sid);
+
+        // 如果有派工，则更新派工档
+        if (repair_sid != null){
+            String sql4 = " update r_repair set close_flag = 'Y',close_date = ?,last_update_date = ?,last_update_by = ?,last_update_program = ? " +
+                    " where repair_sid = ? -${tenantsid}";
+            dao.update(sql4,date,date,user_id,"CallRepair/putList",repair_sid);
+        }
+
+        return DWServiceResultBuilder.build(true,"Success",null);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackForClassName = "Exception")
