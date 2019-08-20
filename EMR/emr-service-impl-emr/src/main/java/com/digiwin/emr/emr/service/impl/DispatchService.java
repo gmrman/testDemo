@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -99,13 +100,15 @@ public class DispatchService implements IDispatchService {
                 user_id, servicename, now, user_id, servicename);
 
         if ("2".equals(type) && dispatchDetail.size() > 0) {//如果是维修计划，插入维修部件
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String nowStr = sdf.format(now);
             String detailuuid = "";
             detailuuid = UUID.randomUUID().toString().replace("-", "");
-            StringBuffer dispatchDetailStr = new StringBuffer("-${tenantsid} INSERT INTO r_repair_d(repair_d_sid, repair_sid, part, work_desc, std_working_hour，" +
+            StringBuffer dispatchDetailStr = new StringBuffer("-${tenantsid} INSERT INTO r_repair_d(repair_d_sid, repair_sid, part, work_desc, std_working_hour," +
                     " create_date, create_by,create_program,last_update_date,last_update_by,last_update_program) VALUES");
             for (Map<String, Object> detail : dispatchDetail) {
-                dispatchDetailStr.append("('" + detailuuid + "','" + id + "','" + detail.get("part") + "','" + detail.get("work_desc") + "','" + detail.get("std_working_hour") + "'," +
-                        "'"+now+"','"+user_id+"','"+servicename+"','"+now+"','"+user_id+"','"+servicename+"'),");
+                dispatchDetailStr.append("('" + detailuuid + "','" + uuid + "','" + detail.get("part") + "','" + detail.get("work_desc") + "','" + detail.get("std_working_hour") + "'," +
+                        "'"+nowStr+"','"+user_id+"','"+servicename+"','"+nowStr+"','"+user_id+"','"+servicename+"'),");
             }
             sql = dispatchDetailStr.toString();
             sql = sql.substring(0, sql.length() - 1);

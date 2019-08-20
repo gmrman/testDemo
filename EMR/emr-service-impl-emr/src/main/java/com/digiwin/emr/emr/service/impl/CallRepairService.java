@@ -136,13 +136,13 @@ public class CallRepairService implements ICallRepairService {
         //查询是否有派工单
         String sql = "-${tenantsid} SELECT repair_sid FROM r_repair WHERE notify_sid = ?";
         List<Map<String, Object>> repairs = this.dao.select(sql, id);
-        String repair_sid = "";
+        String repair_sid = null;
 
         if(repairs.size()>0){
             //存在派工单则获取到派工单ID
             repair_sid = repairs.get(0).get("repair_sid").toString();
-            sql = "-${tenantsid} UPDATE r_notify SET out_flag='Y',last_update_date=?,last_update_by=?,last_update_program=? WHERE notify_sid=?";
-            this.dao.update(sql, now,user_id,servicename,id);
+            sql = "-${tenantsid} UPDATE r_repair SET out_flag='Y',last_update_date=?,last_update_by=?,last_update_program=? WHERE repair_sid=?";
+            this.dao.update(sql, now,user_id,servicename,repair_sid);
         }
 
         sql = "-${tenantsid} UPDATE r_notify SET out_flag='Y',last_update_date=?,last_update_by=?,last_update_program=? WHERE notify_sid=?";

@@ -176,9 +176,8 @@ public class MaintainReportService implements IMaintainReportService {
         List<Map<String, Object>> list = this.dao.select(sql, id, id);
         if(list.size()>0){
             Map<String, Object> profile = DWServiceContext.getContext().getProfile();
-            String tenantsid = (String) profile.get("tenantSid");
+            Long tenantsid = (Long) profile.get("tenantSid");
             String eq_no = list.get(0).get("eq_no").toString();
-
             Excel ec = new Excel();
             //获取设备ID为eq_no的设备信息
             List<Map<String, Object>> DataList = EquipmentUtil.callApiForEquipmentByESC(tenantsid+"", comp_no, site_no,new ArrayList<String>(),
