@@ -149,11 +149,11 @@ public class TaskService implements ITaskService {
         String site_no = (String)info.get("site_no");
         String comp_no = (String)info.get("comp_no");
         //通知单id
-        String nofity_sid = (String)info.get("nofity_sid");
+        String notify_sid = (String)info.get("notify_sid");
 
         if(site_no == null || site_no.isEmpty())  throw new DWArgumentException("site_no", "site_no is null !");
         if(comp_no == null || comp_no.isEmpty())  throw new DWArgumentException("comp_no", "comp_no is null !");
-        if(nofity_sid == null || nofity_sid.isEmpty())  throw new DWArgumentException("nofity_sid", "nofity_sid is null !");
+        if(notify_sid == null || notify_sid.isEmpty())  throw new DWArgumentException("notify_sid", "notify_sid is null !");
         //获取租户
         Map<String, Object> profile = DWServiceContext.getContext().getProfile();
         Long tenantsid = (Long) profile.get("tenantSid");
@@ -164,18 +164,18 @@ public class TaskService implements ITaskService {
                 "        IFNULL(rre.report_seq,0) AS report_seq " +
                 "   from r_notify rn  " +
                 "   left join r_repair rr " +
-                "     on rn.nofity_sid = rr.nofity_sid " +
+                "     on rn.notify_sid = rr.notify_sid " +
                 "    and rn.eq_no = rr.eq_no " +
                 "   left join r_report rre "+
-                "     on rp.nofity_sid = rre.nofity_sid " +
+                "     on rp.notify_sid = rre.notify_sid " +
                 "    and rp.eq_no = rre.eq_no " +
-                "  where rn.nofity_sid = ? " +
+                "  where rn.notify_sid = ? " +
                 "    and rn.tenantsid = ? " +
                 "    and rn.comp_no = ? " +
                 "    and rn.site_no = ? " +
                 "    -${tenantsid}" ;
 
-        List<Map<String,Object>> detailList = this.dao.select(detailSql,nofity_sid, tenantsid, comp_no, site_no);
+        List<Map<String,Object>> detailList = this.dao.select(detailSql,notify_sid, tenantsid, comp_no, site_no);
         Map<String,Object> dataMap = new HashMap<>();
         if(detailList.size() > 0) {
             //获取维修部件信息
