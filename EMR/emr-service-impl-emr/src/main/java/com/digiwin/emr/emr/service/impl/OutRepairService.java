@@ -58,7 +58,7 @@ public class OutRepairService implements IOutRepairService {
             // 获取通知单文档ID
             String dsql1 = " select notify_d2_sid,doc_id from r_notify_d2 where notify_sid = ? -${tenantsid}";
             List<Map<String,Object>> notifyDoc = dao.select(dsql1,notify_sid);
-            // 获取外修记录文档ID
+            // 获取叫修记录文档ID
             String dsql2 = " select repair_out_d_sid,doc_id from r_repair_out_d where out_sid = ? -${tenantsid}";
             List<Map<String,Object>> repairOutDoc = dao.select(dsql2,out_sid);
             // 获取设备名称
