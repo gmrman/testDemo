@@ -24,7 +24,7 @@ public class StringUtil {
 
 		String comp_no = (String)info.get("comp_no");
 
-		if (comp_no == null || comp_no.isEmpty()) throw new DWArgumentException("comp_no", "comp_no is null !");
+		if (comp_no == null) throw new DWArgumentException("comp_no", "comp_no is null !");
 		StringUtil.SQL(comp_no);
 	}
 	
