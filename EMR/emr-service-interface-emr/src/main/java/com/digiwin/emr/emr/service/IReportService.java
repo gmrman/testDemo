@@ -25,4 +25,12 @@ public interface IReportService extends DWService {
      */
     public Object getStopHourComparation(Map<String,Object> info) throws Exception;
 
+
+    /**
+     * 报表：异常维修统计
+     * @author jiangzheng
+     * @param info get
+     * @return 結果
+     */
+    public Object getAbnormalMaintain(Map<String,Object> info) throws Exception;
 }
