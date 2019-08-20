@@ -30,6 +30,8 @@ public class FileService implements IFileService {
 	// 上传文件
 	@Override
 	public Object postMedia(String folder, DWFile file) throws Exception {
+//		String folder = "20190820";
+		System.out.println(folder);
 		Map<String, Object> map = new HashMap<>();
 		Map<String, Object> profile = DWServiceContext.getContext().getProfile();
 		Long tenantsid = (Long) profile.get("tenantSid");
