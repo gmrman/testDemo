@@ -23,7 +23,7 @@ public interface IFileService extends DWService {
 	/**
 	 *获取文件（新方法）
 	 */
-	@AllowAnonymous
+//	@AllowAnonymous
 	public Object getFile(String fileId) throws Exception;
 
 
