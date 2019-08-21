@@ -114,17 +114,25 @@ public class ReportService implements IReportService {
         List<Map<String,Object>> hourList = this.dao.select(hourSql, tenantsid, comp_no, site_no, year);
         //补全月份
         for(int i=1;i<=12;i++){
-            if(!hourList.contains(i)){
+            boolean exist = false;
+            for(Map<String,Object> hourMap : hourList){
+                int month = Integer.parseInt(hourMap.get("month").toString());
+                if(month == i){
+                    exist = true;
+                    break;
+                }
+            }
+            if(!exist){
                 Map<String,Object> temp = new HashMap<>();
                 temp.put("month",i);
-                temp.put("stop_hour",0);
+                temp.put("stop_hour",0.0);
                 hourList.add(temp);
             }
         }
         //根据月份排序
         Collections.sort(hourList, new Comparator<Map<String, Object>>() {
             public int compare(Map<String, Object> c1, Map<String, Object> c2) {
-                return ( c1.get("month").toString()).compareTo(c2.get("month").toString());
+                return Integer.parseInt(c1.get("month").toString()) - Integer.parseInt(c2.get("month").toString());
             }
         });
 
@@ -142,9 +150,18 @@ public class ReportService implements IReportService {
                           "  -${tenantsid} " ;
 
         List<Map<String,Object>> timesList = this.dao.select(timesSql, tenantsid, comp_no, site_no, year);
+
         //补全月份
         for(int i=1;i<=12;i++){
-            if(!timesList.contains(i)){
+            boolean exist = false;
+            for(Map<String,Object> timesMap : timesList){
+                int month = Integer.parseInt(timesMap.get("month").toString());
+                if(month == i){
+                    exist = true;
+                    break;
+                }
+            }
+            if(!exist){
                 Map<String,Object> temp = new HashMap<>();
                 temp.put("month",i);
                 temp.put("maintain_times",0);
@@ -154,7 +171,7 @@ public class ReportService implements IReportService {
         //根据月份排序
         Collections.sort(timesList, new Comparator<Map<String, Object>>() {
             public int compare(Map<String, Object> c1, Map<String, Object> c2) {
-                return ( c1.get("month").toString()).compareTo(c2.get("month").toString());
+                return Integer.parseInt(c1.get("month").toString()) - Integer.parseInt(c2.get("month").toString());
             }
         });
 
@@ -230,7 +247,7 @@ public class ReportService implements IReportService {
         //根据月份排序
         Collections.sort(stopList, new Comparator<Map<String, Object>>() {
             public int compare(Map<String, Object> c1, Map<String, Object> c2) {
-                return ( c1.get("month").toString()).compareTo(c2.get("month").toString());
+                return Integer.parseInt(c1.get("month").toString()) - Integer.parseInt(c2.get("month").toString());
             }
         });
 
