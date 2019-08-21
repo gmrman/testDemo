@@ -486,7 +486,4 @@ public class EquipmentMaintainItemService implements IEquipmentMaintainItemServi
         return EqList;
     }
 
-    public static void main(String[] args){
-
-    }
 }
