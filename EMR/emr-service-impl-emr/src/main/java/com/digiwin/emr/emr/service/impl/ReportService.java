@@ -194,7 +194,7 @@ public class ReportService implements IReportService {
                      "   left join r_plan rp " +
                      "     on rep.plan_sid = rp.plan_sid " +
                      "    and DATE_FORMAT(rep.start_date,'%Y%m') = DATE_FORMAT(rp.start_date,'%Y%m') " +
-                     "   left join r_repair rre " +
+                     "   left join r_report rre " +
                      "     on rep.plan_sid = rre.plan_sid " +
                      "    and DATE_FORMAT(rep.start_date,'%Y%m') = DATE_FORMAT(rre.finish_date,'%Y%m') " +
                      "  where rp.tenantsid = ? " +
